@@ -1,0 +1,855 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profit & Loss Manager</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --glass: rgba(255,255,255,.09);
+  --border: rgba(255,255,255,.17);
+  --green: #4ade80;
+  --red: #fb7185;
+}
+
+body {
+  min-height: 100vh;
+  padding: 28px 16px;
+  font-family: Poppins, sans-serif;
+  color: white;
+  background: linear-gradient(-45deg,#090979,#4c1d95,#831843,#075985);
+  background-size: 400% 400%;
+  animation: gradient 12s ease infinite;
+  overflow-x: hidden;
+}
+
+@keyframes gradient {
+  0%,100% {background-position:0% 50%}
+  50% {background-position:100% 50%}
+}
+
+.orb {
+  position: fixed;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: .35;
+  pointer-events: none;
+  z-index: -1;
+  animation: float 7s ease-in-out infinite alternate;
+}
+
+.orb.one {background:#00e5ff;top:5%;left:2%}
+.orb.two {background:#ff00aa;bottom:3%;right:2%;animation-delay:2s}
+
+@keyframes float {
+  to {transform:translate(40px,30px) scale(1.2)}
+}
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 30px;
+  animation: appear .7s ease;
+}
+
+.logo {
+  font-size: 45px;
+  margin-bottom: 5px;
+}
+
+.tag {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 30px;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  font-size: 10px;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+
+h1 {
+  font-size: clamp(27px,5vw,42px);
+  font-weight: 800;
+  background: linear-gradient(90deg,#fff,#67e8f9,#f9a8d4);
+  color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  color: #e9d5ff;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+@keyframes appear {
+  from {opacity:0;transform:translateY(18px)}
+  to {opacity:1;transform:translateY(0)}
+}
+
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  gap: 14px;
+  margin-bottom: 25px;
+}
+
+.card, .panel {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-radius: 20px;
+  box-shadow: 0 15px 40px #0002;
+}
+
+.card {
+  padding: 20px;
+  transition: transform .25s,border-color .25s;
+  animation: appear .5s ease both;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  border-color: #ffffff60;
+}
+
+.card-icon {
+  font-size: 25px;
+  margin-bottom: 12px;
+}
+
+.card-label {
+  color: #e9d5ff;
+  font-size: 11px;
+  margin-bottom: 7px;
+}
+
+.card-value {
+  font-size: clamp(17px,2vw,23px);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.green {color:var(--green)}
+.red {color:var(--red)}
+.yellow {color:#fde047}
+
+.panel {
+  padding: 24px;
+  margin-bottom: 22px;
+}
+
+.panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.panel-heading h2 {
+  font-size: 19px;
+}
+
+.muted {
+  color: #e9d5ff;
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.btn {
+  padding: 11px 16px;
+  border: 0;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+.btn-add {
+  background: linear-gradient(135deg,#67e8f9,#a5f3fc);
+  color: #111827;
+}
+
+.btn-reset {
+  color: white;
+  background: #ffffff15;
+  border: 1px solid var(--border);
+}
+
+.btn-delete {
+  color: #fecdd3;
+  background: #fb718520;
+  border: 1px solid #fb718550;
+  padding: 9px 12px;
+}
+
+.products {
+  display: grid;
+  gap: 15px;
+}
+
+.product {
+  padding: 20px;
+  background: rgba(0,0,0,.13);
+  border: 1px solid var(--border);
+  border-radius: 17px;
+  animation: appear .35s ease;
+}
+
+.product-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 17px;
+}
+
+.product-title {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 13px;
+}
+
+.field label {
+  display: block;
+  font-size: 11px;
+  color: #e9d5ff;
+  margin-bottom: 8px;
+}
+
+.field input {
+  width: 100%;
+  min-width: 0;
+  padding: 12px 11px;
+  border: 1px solid #ffffff30;
+  border-radius: 11px;
+  outline: none;
+  background: #ffffff0d;
+  color: white;
+  font-family: inherit;
+  font-size: 13px;
+  transition: .2s;
+}
+
+.field input:focus {
+  border-color: #67e8f9;
+  box-shadow: 0 0 15px #67e8f925;
+}
+
+.field input::placeholder {
+  color: #c4b5fd;
+}
+
+.field input.invalid {
+  border-color: var(--red);
+}
+
+.product-result {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 10px;
+  margin-top: 17px;
+}
+
+.mini {
+  background: #ffffff0b;
+  border-radius: 11px;
+  padding: 12px;
+  min-width: 0;
+}
+
+.mini-label {
+  color: #d8b4fe;
+  font-size: 10px;
+  margin-bottom: 5px;
+}
+
+.mini-value {
+  font-size: 14px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.status {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 5px 11px;
+  border-radius: 30px;
+  background: #ffffff12;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.status.profit {color:var(--green)}
+.status.loss {color:var(--red)}
+.status.equal {color:#fde047}
+
+.empty {
+  text-align: center;
+  padding: 30px 10px;
+  color: #e9d5ff;
+  font-size: 13px;
+}
+
+.notice {
+  display: none;
+  padding: 13px;
+  margin-bottom: 16px;
+  border: 1px solid #fb718570;
+  border-radius: 12px;
+  background: #fb718515;
+  color: #fecdd3;
+  font-size: 12px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+footer {
+  text-align: center;
+  padding: 15px;
+  color: #e9d5ff;
+  font-size: 11px;
+}
+
+.confetti {
+  position: fixed;
+  top: -25px;
+  z-index: 100;
+  pointer-events: none;
+  animation: fall 2.8s linear forwards;
+}
+
+@keyframes fall {
+  to {transform:translateY(110vh) rotate(700deg);opacity:0}
+}
+
+@media(max-width:850px) {
+  .dashboard {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fields {grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+@media(max-width:480px) {
+  body {padding:20px 11px}
+  .panel {padding:16px}
+  .card {padding:15px}
+  .product {padding:14px}
+  .fields {gap:10px}
+  .product-result {grid-template-columns:1fr}
+  .panel-heading h2 {font-size:16px}
+  .btn {padding:10px 12px}
+}
+
+@media(prefers-reduced-motion:reduce) {
+  *,*::before,*::after {
+    animation:none!important;
+    transition:none!important;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="orb one"></div>
+<div class="orb two"></div>
+
+<main class="container">
+
+<header>
+  <div class="logo">💸</div>
+  <div class="tag">✦ SMART BUSINESS TOOL ✦</div>
+  <h1>Profit & Loss Manager</h1>
+  <p class="subtitle">
+    Manage products. Track investment. Calculate your profit.
+  </p>
+</header>
+
+<section class="dashboard">
+  <div class="card">
+    <div class="card-icon">📦</div>
+    <div class="card-label">TOTAL PRODUCTS</div>
+    <div class="card-value" id="totalProducts">0</div>
+  </div>
+
+  <div class="card">
+    <div class="card-icon">🛒</div>
+    <div class="card-label">TOTAL INVESTMENT</div>
+    <div class="card-value" id="totalCost">₹0.00</div>
+  </div>
+
+  <div class="card">
+    <div class="card-icon">💰</div>
+    <div class="card-label">TOTAL SALES</div>
+    <div class="card-value" id="totalSales">₹0.00</div>
+  </div>
+
+  <div class="card">
+    <div class="card-icon">📈</div>
+    <div class="card-label" id="overallLabel">NET PROFIT / LOSS</div>
+    <div class="card-value green" id="totalProfit">₹0.00</div>
+    <div class="muted" id="totalPercentage">0.00% on cost</div>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel-heading">
+    <div>
+      <h2>🧾 Product Inventory</h2>
+      <p class="muted">Enter product name, quantity and unit prices.</p>
+    </div>
+
+    <button class="btn btn-add" id="addBtn" type="button">
+      ＋ Add Product
+    </button>
+  </div>
+
+  <div class="notice" id="notice" role="alert"></div>
+  <div class="products" id="products"></div>
+
+  <div class="actions">
+    <button class="btn btn-add" id="validateBtn" type="button">
+      ✓ Validate Products
+    </button>
+    <button class="btn btn-reset" id="resetBtn" type="button">
+      ↻ Reset All
+    </button>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel-heading">
+    <div>
+      <h2>📊 Business Summary</h2>
+      <p class="muted">Your complete sales and investment breakdown.</p>
+    </div>
+  </div>
+
+  <div class="product-result">
+    <div class="mini">
+      <div class="mini-label">TOTAL UNITS</div>
+      <div class="mini-value" id="totalUnits">0</div>
+    </div>
+
+    <div class="mini">
+      <div class="mini-label">PROFIT-MAKING PRODUCTS</div>
+      <div class="mini-value green" id="profitCount">0</div>
+    </div>
+
+    <div class="mini">
+      <div class="mini-label">LOSS-MAKING PRODUCTS</div>
+      <div class="mini-value red" id="lossCount">0</div>
+    </div>
+  </div>
+
+  <p class="muted" style="margin-top:16px;line-height:1.9">
+    💡 Profit = Total Sales − Total Investment.<br>
+    Profit % = (Profit ÷ Total Investment) × 100.<br>
+    Delivery charges, taxes and other business expenses are not included.
+  </p>
+</section>
+
+<footer>
+  Made with ❤️ by MD MUSHARAF | Money Matters 💎
+</footer>
+
+</main>
+
+<script>
+"use strict";
+
+const productsEl = document.getElementById("products");
+const notice = document.getElementById("notice");
+
+const money = n => "₹" + n.toLocaleString("en-IN", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2
+});
+
+let nextId = 1;
+
+function addProduct(name = "", qty = "", cp = "", sp = "") {
+  const id = nextId++;
+
+  const card = document.createElement("article");
+  card.className = "product";
+  card.dataset.id = id;
+
+  card.innerHTML = `
+    <div class="product-top">
+      <div class="product-title">
+        📦 Product #${productsEl.children.length + 1}
+      </div>
+      <button class="btn btn-delete remove-btn" type="button">
+        ✕ Remove
+      </button>
+    </div>
+
+    <div class="fields">
+      <div class="field">
+        <label>PRODUCT NAME *</label>
+        <input class="name" type="text" maxlength="100"
+          placeholder="e.g. T-Shirt" autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label>QUANTITY *</label>
+        <input class="qty" type="number" min="1" step="1"
+          placeholder="e.g. 10">
+      </div>
+
+      <div class="field">
+        <label>COST PRICE / UNIT (₹) *</label>
+        <input class="cp" type="number" min="0" step="any"
+          placeholder="e.g. 200">
+      </div>
+
+      <div class="field">
+        <label>SELLING PRICE / UNIT (₹) *</label>
+        <input class="sp" type="number" min="0" step="any"
+          placeholder="e.g. 350">
+      </div>
+    </div>
+
+    <div class="product-result">
+      <div class="mini">
+        <div class="mini-label">TOTAL COST</div>
+        <div class="mini-value row-cost">₹0.00</div>
+      </div>
+
+      <div class="mini">
+        <div class="mini-label">TOTAL SALES</div>
+        <div class="mini-value row-sales">₹0.00</div>
+      </div>
+
+      <div class="mini">
+        <div class="mini-label">PROFIT / LOSS</div>
+        <div class="mini-value row-profit">₹0.00</div>
+      </div>
+    </div>
+
+    <div class="status equal">Enter product details</div>
+  `;
+
+  card.querySelector(".name").value = name;
+  card.querySelector(".qty").value = qty;
+  card.querySelector(".cp").value = cp;
+  card.querySelector(".sp").value = sp;
+
+  card.querySelectorAll("input").forEach(input => {
+    input.addEventListener("input", () => {
+      hideNotice();
+      calculate();
+    });
+  });
+
+  card.querySelector(".remove-btn").addEventListener("click", () => {
+    card.remove();
+    renumber();
+    hideNotice();
+    calculate();
+  });
+
+  productsEl.appendChild(card);
+  renumber();
+  calculate();
+
+  card.querySelector(".name").focus();
+}
+
+function hideNotice() {
+  notice.style.display = "none";
+  notice.textContent = "";
+}
+
+function renumber() {
+  [...productsEl.children].forEach((card, index) => {
+    card.querySelector(".product-title").textContent =
+      "📦 " + (card.querySelector(".name").value.trim() ||
+      "Product #" + (index + 1));
+  });
+}
+
+function readProduct(card) {
+  const name = card.querySelector(".name").value.trim();
+  const qtyRaw = card.querySelector(".qty").value.trim();
+  const cpRaw = card.querySelector(".cp").value.trim();
+  const spRaw = card.querySelector(".sp").value.trim();
+
+  const complete = name !== "" &&
+    qtyRaw !== "" && cpRaw !== "" && spRaw !== "";
+
+  const qty = Number(qtyRaw);
+  const cp = Number(cpRaw);
+  const sp = Number(spRaw);
+
+  const valid = complete &&
+    Number.isSafeInteger(qty) && qty > 0 &&
+    Number.isFinite(cp) && cp >= 0 &&
+    Number.isFinite(sp) && sp >= 0 &&
+    Number.isFinite(qty * cp) &&
+    Number.isFinite(qty * sp);
+
+  return {
+    name, qty, cp, sp, complete, valid,
+    cost: valid ? qty * cp : 0,
+    sales: valid ? qty * sp : 0
+  };
+}
+
+function calculate() {
+  let totalCost = 0;
+  let totalSales = 0;
+  let totalUnits = 0;
+  let profitCount = 0;
+  let lossCount = 0;
+  let validCount = 0;
+
+  [...productsEl.children].forEach((card, index) => {
+    const p = readProduct(card);
+
+    card.querySelector(".product-title").textContent =
+      "📦 " + (p.name || "Product #" + (index + 1));
+
+    card.querySelectorAll("input").forEach(input => {
+      input.classList.remove("invalid");
+    });
+
+    const costEl = card.querySelector(".row-cost");
+    const salesEl = card.querySelector(".row-sales");
+    const profitEl = card.querySelector(".row-profit");
+    const status = card.querySelector(".status");
+
+    if (!p.complete || !p.valid) {
+      if (p.complete && !p.valid) {
+        card.querySelectorAll("input").forEach(input => {
+          if (!input.value.trim() ||
+              (input.classList.contains("qty") &&
+                (!Number.isSafeInteger(Number(input.value)) ||
+                 Number(input.value) <= 0)) ||
+              ((input.classList.contains("cp") ||
+                input.classList.contains("sp")) &&
+                (!Number.isFinite(Number(input.value)) ||
+                 Number(input.value) < 0))) {
+            input.classList.add("invalid");
+          }
+        });
+      }
+
+      costEl.textContent = "—";
+      salesEl.textContent = "—";
+      profitEl.textContent = "—";
+      profitEl.className = "mini-value row-profit";
+
+      status.className = "status equal";
+      status.textContent = !p.complete
+        ? "Complete all fields"
+        : "Check invalid values";
+
+      return;
+    }
+
+    validCount++;
+    totalCost += p.cost;
+    totalSales += p.sales;
+    totalUnits += p.qty;
+
+    const difference = p.sales - p.cost;
+
+    costEl.textContent = money(p.cost);
+    salesEl.textContent = money(p.sales);
+    profitEl.textContent = money(Math.abs(difference));
+
+    if (difference > 0) {
+      profitCount++;
+      profitEl.className = "mini-value row-profit green";
+      status.className = "status profit";
+      status.textContent = "▲ Profit: " +
+        money(difference) + " (" +
+        (p.cost > 0 ? (difference / p.cost * 100).toFixed(2) : "N/A") +
+        (p.cost > 0 ? "%" : "") + " on cost)";
+    } else if (difference < 0) {
+      lossCount++;
+      profitEl.className = "mini-value row-profit red";
+      status.className = "status loss";
+      status.textContent = "▼ Loss: " + money(-difference) +
+        " (" + (p.cost > 0
+          ? ((-difference / p.cost) * 100).toFixed(2) + "%"
+          : "N/A") + " on cost)";
+    } else {
+      profitEl.className = "mini-value row-profit yellow";
+      status.className = "status equal";
+      status.textContent = "＝ No Profit, No Loss";
+    }
+  });
+
+  const overall = totalSales - totalCost;
+  const percentage = totalCost > 0
+    ? Math.abs(overall / totalCost * 100).toFixed(2)
+    : null;
+
+  document.getElementById("totalProducts").textContent =
+    validCount.toLocaleString("en-IN");
+
+  document.getElementById("totalCost").textContent = money(totalCost);
+  document.getElementById("totalSales").textContent = money(totalSales);
+
+  const profitEl = document.getElementById("totalProfit");
+  const labelEl = document.getElementById("overallLabel");
+
+  profitEl.className = "card-value";
+
+  if (overall > 0) {
+    labelEl.textContent = "TOTAL NET PROFIT";
+    profitEl.textContent = "+" + money(overall);
+    profitEl.classList.add("green");
+  } else if (overall < 0) {
+    labelEl.textContent = "TOTAL NET LOSS";
+    profitEl.textContent = "-" + money(-overall);
+    profitEl.classList.add("red");
+  } else {
+    labelEl.textContent = "NET PROFIT / LOSS";
+    profitEl.textContent = money(0);
+    profitEl.classList.add("yellow");
+  }
+
+  document.getElementById("totalPercentage").textContent =
+    totalCost > 0
+      ? (overall < 0 ? "Loss: " : "Profit: ") +
+        percentage + "% on cost"
+      : totalSales > 0
+        ? "Cost is zero; percentage unavailable"
+        : "0.00% on cost";
+
+  document.getElementById("totalUnits").textContent =
+    totalUnits.toLocaleString("en-IN");
+
+  document.getElementById("profitCount").textContent = profitCount;
+  document.getElementById("lossCount").textContent = lossCount;
+
+  renumber();
+}
+
+function validateProducts() {
+  hideNotice();
+
+  const cards = [...productsEl.children];
+
+  if (!cards.length) {
+    showNotice("Please add at least one product.");
+    return;
+  }
+
+  let errors = [];
+
+  cards.forEach((card, index) => {
+    const p = readProduct(card);
+
+    if (!p.name) errors.push("Product " + (index + 1) + ": enter a name.");
+    if (!card.querySelector(".qty").value.trim() ||
+        !Number.isSafeInteger(p.qty) || p.qty <= 0) {
+      errors.push("Product " + (index + 1) +
+        ": quantity must be a positive whole number.");
+    }
+
+    if (!card.querySelector(".cp").value.trim() ||
+        !Number.isFinite(p.cp) || p.cp < 0) {
+      errors.push("Product " + (index + 1) +
+        ": enter a valid non-negative cost price.");
+    }
+
+    if (!card.querySelector(".sp").value.trim() ||
+        !Number.isFinite(p.sp) || p.sp < 0) {
+      errors.push("Product " + (index + 1) +
+        ": enter a valid non-negative selling price.");
+    }
+
+    if (p.complete && !p.valid &&
+        Number.isFinite(p.qty * p.cp) &&
+        Number.isFinite(p.qty * p.sp)) {
+      errors.push("Product " + (index + 1) +
+        ": check the quantity and prices.");
+    }
+  });
+
+  if (errors.length) {
+    showNotice(errors.slice(0, 8).join(" "));
+  } else {
+    showNotice("✓ All " + cards.length +
+      " product entries are valid. Dashboard updated!");
+    notice.style.background = "#22c55e18";
+    notice.style.borderColor = "#4ade8060";
+    notice.style.color = "#bbf7d0";
+  }
+}
+
+function showNotice(message) {
+  notice.textContent = message;
+  notice.style.display = "block";
+  notice.style.background = "#fb718515";
+  notice.style.borderColor = "#fb718570";
+  notice.style.color = "#fecdd3";
+}
+
+function resetAll() {
+  if (productsEl.children.length &&
+      !confirm("Clear all products and start again?")) {
+    return;
+  }
+
+  productsEl.replaceChildren();
+  hideNotice();
+  nextId = 1;
+  addProduct();
+}
+
+document.getElementById("addBtn").addEventListener("click", () => {
+  addProduct();
+});
+
+document.getElementById("validateBtn").addEventListener("click",
+  validateProducts);
+
+document.getElementById("resetBtn").addEventListener("click",
+  resetAll);
+
+addProduct();
+
+// Session-only: no localStorage or permanent database.
+</script>
+</body>
+</html>
